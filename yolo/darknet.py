@@ -2,6 +2,9 @@ from __future__ import division
 
 import sys
 import os
+import os.path as osp
+
+abs_path = osp.dirname(osp.abspath(__file__))
 
 import torch 
 import torch.nn as nn
@@ -309,7 +312,7 @@ def create_modules(blocks):
 
 
 class Darknet(nn.Module):
-    def __init__(self, cfgfile):
+    def __init__(self, cfgfile=osp.join(abs_path, 'cfg/yolov3-spp.cfg')):
         super(Darknet, self).__init__()
         self.blocks = parse_cfg(cfgfile)
         self.net_info, self.module_list = create_modules(self.blocks)
