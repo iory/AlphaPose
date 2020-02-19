@@ -776,3 +776,35 @@ def crop_from_dets(img, boxes, inps, pt1, pt2):
         pt2[i] = bottomRight
 
     return inps, pt1, pt2
+
+
+def get_result(boxes, scores, hm_data, pt1, pt2, orig_img,
+               return_result=False):
+    orig_img = np.array(orig_img, dtype=np.uint8)
+    result = {'result': []}
+    if boxes is not None:
+        # location prediction (n, kp, 2) | score prediction (n, kp, 1)
+        if opt.matching:
+            preds = getMultiPeakPrediction(
+                hm_data, pt1.numpy(), pt2.numpy(),
+                opt.inputResH, opt.inputResW,
+                opt.outputResH, opt.outputResW)
+            result = matching(boxes, scores.numpy(), preds)
+        else:
+            preds_hm, preds_img, preds_scores = getPrediction(
+                hm_data, pt1, pt2, opt.inputResH, opt.inputResW,
+                opt.outputResH, opt.outputResW)
+            result = pose_nms(
+                boxes, scores, preds_img, preds_scores)
+        result = {
+            'result': result,
+        }
+    return result
+
+
+def one_frame_prepare(frame):
+    inp_dim = int(opt.inp_dim)
+    img, orig_img, dim = prep_frame(frame, inp_dim)
+    inp = im_to_torch(orig_img)
+    im_dim_list = torch.FloatTensor([dim]).repeat(1, 2)
+    return img, orig_img, inp, im_dim_list

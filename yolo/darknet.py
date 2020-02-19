@@ -1,11 +1,19 @@
 from __future__ import division
 
+import sys
+import os
+
 import torch 
 import torch.nn as nn
 import torch.nn.functional as F 
 from torch.autograd import Variable
 import numpy as np
-import cv2 
+if '/opt/ros/kinetic/lib/python2.7/dist-packages' in sys.path:
+    sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages') # in order to import cv2 under python3
+    import cv2
+    sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages') # append back in order to import rospy
+else:
+    import cv2
 import matplotlib.pyplot as plt
 try:
     from util import count_parameters as count
