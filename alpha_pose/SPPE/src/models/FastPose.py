@@ -3,7 +3,8 @@ from torch.autograd import Variable
 
 from .layers.SE_Resnet import SEResnet
 from .layers.DUC import DUC
-from opt import opt
+
+from alpha_pose.opt import opt
 
 
 def createModel():

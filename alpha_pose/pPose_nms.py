@@ -6,7 +6,8 @@ import zipfile
 import time
 from multiprocessing.dummy import Pool as ThreadPool
 import numpy as np
-from opt import opt
+
+from alpha_pose.opt import opt
 
 ''' Constant Configuration '''
 delta1 = 1

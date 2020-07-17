@@ -4,7 +4,6 @@ import os
 import collections
 from torch._six import string_classes, int_classes
 import cv2
-from opt import opt
 from tqdm import tqdm
 import time
 import matplotlib.pyplot as plt
@@ -12,6 +11,8 @@ from PIL import Image
 import numpy as np
 import math
 import copy
+
+from alpha_pose.opt import opt
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)

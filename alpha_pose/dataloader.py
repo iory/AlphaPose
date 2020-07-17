@@ -4,14 +4,6 @@ from torch.autograd import Variable
 import torch.utils.data as data
 import torchvision.transforms as transforms
 from PIL import Image, ImageDraw
-from SPPE.src.utils.img import load_image, cropBox, im_to_torch
-from opt import opt
-from yolo.preprocess import prep_image, prep_frame, inp_to_image
-from pPose_nms import pose_nms, write_json
-from matching import candidate_reselect as matching
-from SPPE.src.utils.eval import getPrediction, getMultiPeakPrediction
-from yolo.util import write_results, dynamic_write_results
-from yolo.darknet import Darknet
 from tqdm import tqdm
 import cv2
 import json
@@ -22,6 +14,16 @@ import torch.multiprocessing as mp
 from multiprocessing import Process
 from multiprocessing import Queue as pQueue
 from threading import Thread
+
+from alpha_pose.SPPE.src.utils.img import load_image, cropBox, im_to_torch
+from alpha_pose.opt import opt
+from alpha_pose.yolo.preprocess import prep_image, prep_frame, inp_to_image
+from alpha_pose.pPose_nms import pose_nms, write_json
+from alpha_pose.matching import candidate_reselect as matching
+from alpha_pose.SPPE.src.utils.eval import getPrediction, getMultiPeakPrediction
+from alpha_pose.yolo.util import write_results, dynamic_write_results
+from alpha_pose.yolo.darknet import Darknet
+
 # import the Queue class from Python 3
 if sys.version_info >= (3, 0):
     from queue import Queue, LifoQueue
@@ -30,9 +32,9 @@ else:
     from Queue import Queue, LifoQueue
 
 if opt.vis_fast:
-    from fn import vis_frame_fast as vis_frame
+    from alpha_pose.fn import vis_frame_fast as vis_frame
 else:
-    from fn import vis_frame
+    from alpha_pose.fn import vis_frame
 
 
 class Image_loader(data.Dataset):
