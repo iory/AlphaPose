@@ -91,12 +91,11 @@ def process_images(bgr_imgs,
                 pt2 = torch.zeros(boxes.size(0), 2)
                 inps, pt1, pt2 = dataloader.crop_from_dets(
                     inp, boxes, inps, pt1, pt2)
-            inps = Variable(inps.cuda())
-
-            hm = pose_model(inps)
-            results = dataloader.get_result(
-                boxes, scores, hm.cpu(),
-                pt1, pt2, orig_img)
+                inps = Variable(inps.cuda())
+                hm = pose_model(inps)
+                results = dataloader.get_result(
+                    boxes, scores, hm.cpu(),
+                    pt1, pt2, orig_img)
         results_list.append(results)
     return results_list
 
