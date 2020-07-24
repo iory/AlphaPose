@@ -16,6 +16,16 @@ with open('requirements.txt') as f:
         install_requires.append(req)
 
 
+data_files = [
+    'alpha_pose/yolo/cfg/tiny-yolo-voc.cfg',
+    'alpha_pose/yolo/cfg/yolo-voc.cfg',
+    'alpha_pose/yolo/cfg/yolo.cfg',
+    'alpha_pose/yolo/cfg/yolov3-spp.cfg',
+    'alpha_pose/yolo/cfg/yolov3.cfg',
+]
+
+
+
 setup(
     name='alpha_pose',
     version=version,
@@ -26,6 +36,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     packages=find_packages(),
+    package_data={'alpha_pose': data_files},
     zip_safe=False,
     setup_requires=setup_requires,
     install_requires=install_requires,
