@@ -37,7 +37,7 @@ class test_net(nn.Module):
     
     def forward(self, x):
         x = x.view(-1)
-        fwd = nn.Sequential(self.linear_1, *self.middle, self.output)
+        fwd = nn.Sequential(self.linear_1, list(self.middle), self.output)
         return fwd(x)
         
 def get_test_input():
