@@ -111,7 +111,16 @@ class AlphaPose(nn.Module):
                     results = dataloader.get_result(
                         boxes, scores, hm.cpu(),
                         pt1, pt2, orig_img)
-            results_list.append(results)
+                    for j, human in enumerate(results['result']):
+                        kp_preds = human['keypoints']
+                        kp_scores = human['kp_score']
+                        score = human['proposal_score']
+                        kp_preds = torch.cat((kp_preds, torch.unsqueeze((kp_preds[5,:]+kp_preds[6,:])/2,0)))
+                        kp_scores = torch.cat((kp_scores, torch.unsqueeze((kp_scores[5,:]+kp_scores[6,:])/2,0)))
+                        human['keypoints'] = kp_preds.cpu().numpy()
+                        human['kp_score'] = kp_scores.cpu().numpy()
+                        human['proposal_score'] = float(score)
+            results_list.append(results['result'])
         return results_list
 
 
