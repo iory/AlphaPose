@@ -9,7 +9,7 @@ from scipy.ndimage import maximum_filter
 from PIL import Image
 from copy import deepcopy
 import matplotlib
-matplotlib.use('agg')
+# matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 
