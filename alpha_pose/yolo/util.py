@@ -26,7 +26,7 @@ def convert2cpu(matrix):
     else:
         return matrix
 
-def predict_transform(prediction, inp_dim, anchors, num_classes, CUDA = True):
+def predict_transform(prediction, inp_dim, anchors, num_classes, device):
     batch_size = prediction.size(0)
     stride =  inp_dim // prediction.size(2)
     grid_size = inp_dim // stride
@@ -56,9 +56,8 @@ def predict_transform(prediction, inp_dim, anchors, num_classes, CUDA = True):
     x_offset = torch.FloatTensor(a).view(-1,1)
     y_offset = torch.FloatTensor(b).view(-1,1)
     
-    if CUDA:
-        x_offset = x_offset.cuda()
-        y_offset = y_offset.cuda()
+    x_offset = x_offset.to(device)
+    y_offset = y_offset.to(device)
     
     x_y_offset = torch.cat((x_offset, y_offset), 1).repeat(1,num_anchors).view(-1,2).unsqueeze(0)
     
@@ -67,8 +66,7 @@ def predict_transform(prediction, inp_dim, anchors, num_classes, CUDA = True):
     #log space transform height and the width
     anchors = torch.FloatTensor(anchors)
     
-    if CUDA:
-        anchors = anchors.cuda()
+    anchors = anchors.to(device)
     
     anchors = anchors.repeat(grid_size*grid_size, 1).unsqueeze(0)
     prediction[:,:,2:4] = torch.exp(prediction[:,:,2:4])*anchors
@@ -187,7 +185,7 @@ def write_results(prediction, confidence, num_classes, nms=True, nms_conf=0.4):
                     if len(image_pred_class) == 1:
                         break
                     # Get the IOUs for all boxes with lower confidence
-                    ious = bbox_iou(max_detections[-1], image_pred_class[1:])
+                    ious = bbox_iou(max_detections[-1], image_pred_class[1:], )
                     # Remove detections with IoU >= NMS threshold
                     image_pred_class = image_pred_class[1:][ious < nms_conf]
 

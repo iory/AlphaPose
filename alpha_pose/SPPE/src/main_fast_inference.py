@@ -57,8 +57,10 @@ class InferenNet_fast(nn.Module):
     def __init__(self, kernel_size, dataset, model_path):
         super(InferenNet_fast, self).__init__()
 
-        model = createModel().cuda()
-        model.load_state_dict(torch.load(model_path))
+        model = createModel()
+        model.load_state_dict(
+            torch.load(model_path,
+                       map_location=torch.device('cpu')))
         model.eval()
         self.pyranet = model
 

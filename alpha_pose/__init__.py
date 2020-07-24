@@ -13,3 +13,4 @@ from alpha_pose.yolo.darknet import Darknet
 from alpha_pose.yolo import util as yolo_utils
 
 from alpha_pose.process_images import process_images
+from alpha_pose.process_images import AlphaPose

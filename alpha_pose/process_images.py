@@ -1,5 +1,8 @@
+from __future__ import division
+
 import numpy as np
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
 import gdown
 
@@ -13,14 +16,103 @@ def get_yolo_model():
     return gdown.cached_download(
         'https://drive.google.com/uc?id=1D47msNOOiJKvPOXlnpyzdKA3k6E97NTC',
         md5='6c569c9ef748131c2d96b2deab446a5f',
-        quiet=False)
+        quiet=True)
 
 
 def get_sppe_model():
     return gdown.cached_download(
         'https://drive.google.com/uc?id=1OPORTWB2cwd5YTVBX-NE8fsauZJWsrtW',
         md5='414d2b4e20ebfbbdac41780b3730262e',
-        quiet=False)
+        quiet=True)
+
+
+class AlphaPose(nn.Module):
+
+    def __init__(self):
+        super(AlphaPose, self).__init__()
+
+        pose_dataset = dataloader.Mscoco()
+        self.pose_model = InferenNet_fast(
+            4 * 1 + 1, pose_dataset, get_sppe_model())
+        self.pose_model.eval()
+
+        self.det_model = Darknet()
+        self.det_model.load_weights(get_yolo_model())
+        self.det_model.eval()
+
+        self.det_model.net_info['height'] = 608
+        self.det_inp_dim = int(self.det_model.net_info['height'])
+        assert(self.det_inp_dim % 32 == 0)
+        assert(self.det_inp_dim > 32)
+
+    def _get_device_type(self):
+        return next(self.parameters()).device
+
+    def process(self, bgr_imgs, nms_thesh=0.6, confidence=0.05):
+        """Process human pose estimation.
+
+        Parameters
+        ----------
+        bgr_imgs : list[numpy.ndarray]
+            list of input images.
+        """
+
+        device = self._get_device_type()
+        num_classes = 80
+        results_list = []
+        for frame in bgr_imgs:
+            img, orig_img, inp, im_dim_list = \
+                dataloader.one_frame_prepare(frame)
+            with torch.no_grad():
+                # Human Detection
+                img = img.to(device)
+                im_dim_list = im_dim_list.to(device)
+
+                prediction = self.det_model(img)
+                # NMS process
+                dets = yolo_utils.dynamic_write_results(
+                    prediction, confidence,
+                    num_classes, nms=True, nms_conf=nms_thesh)
+                results = {'result': []}
+                if isinstance(dets, int) or dets.shape[0] == 0:
+                    pass
+                else:
+                    im_dim_list = torch.index_select(
+                        im_dim_list, 0, dets[:, 0].long())
+                    scaling_factor = torch.min(
+                        self.det_inp_dim / im_dim_list, 1)[0].view(-1, 1)
+
+                    # coordinate transfer
+                    dets[:, [1, 3]] -= (
+                        self.det_inp_dim -
+                        scaling_factor * im_dim_list[:, 0].view(-1, 1)) / 2
+                    dets[:, [2, 4]] -= (
+                        self.det_inp_dim -
+                        scaling_factor * im_dim_list[:, 1].view(-1, 1)) / 2
+
+                    dets[:, 1:5] /= scaling_factor
+                    for j in range(dets.shape[0]):
+                        dets[j, [1, 3]] = torch.clamp(dets[j, [1, 3]], 0.0,
+                                                      im_dim_list[j, 0])
+                        dets[j, [2, 4]] = torch.clamp(dets[j, [2, 4]], 0.0,
+                                                      im_dim_list[j, 1])
+                    boxes = dets[:, 1:5].cpu()
+                    scores = dets[:, 5:6].cpu()
+                    # Pose Estimation
+                    inputResH = 320
+                    inputResW = 256
+                    inps = torch.zeros(boxes.size(0), 3, inputResH, inputResW)
+                    pt1 = torch.zeros(boxes.size(0), 2)
+                    pt2 = torch.zeros(boxes.size(0), 2)
+                    inps, pt1, pt2 = dataloader.crop_from_dets(
+                        inp, boxes, inps, pt1, pt2)
+                    inps = inps.to(device)
+                    hm = self.pose_model(inps)
+                    results = dataloader.get_result(
+                        boxes, scores, hm.cpu(),
+                        pt1, pt2, orig_img)
+            results_list.append(results)
+        return results_list
 
 
 def process_images(bgr_imgs,
