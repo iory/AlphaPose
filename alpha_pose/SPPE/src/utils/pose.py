@@ -1,3 +1,5 @@
+from __future__ import division
+
 from utils.img import (load_image, drawGaussian, drawBigCircle, drawSmallCircle, cv_rotate,
                        cropBox, transformBox, transformBoxInvert, flip, shuffleLR, drawCOCO)
 from utils.eval import getPrediction

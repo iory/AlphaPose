@@ -1,3 +1,5 @@
+from __future__ import division
+
 import os
 import torch
 from torch.autograd import Variable

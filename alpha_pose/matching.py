@@ -3,6 +3,8 @@
 # Written by Jiefeng Li (jeff.lee.sjtu@gmail.com)
 # -----------------------------------------------------
 
+from __future__ import division
+
 from copy import deepcopy
 
 import numpy as np

@@ -1,3 +1,5 @@
+from __future__ import division
+
 from alpha_pose.opt import opt
 try:
     from alpha_pose.SPPE.src.utils.img import transformBoxInvert, transformBoxInvert_batch, findPeak, processPeaks

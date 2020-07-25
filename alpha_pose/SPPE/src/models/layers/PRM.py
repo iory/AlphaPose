@@ -1,3 +1,5 @@
+from __future__ import division
+
 import torch.nn as nn
 from .util_models import ConcatTable, CaddTable, Identity
 import math
