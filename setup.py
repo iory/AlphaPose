@@ -17,11 +17,11 @@ with open('requirements.txt') as f:
 
 
 data_files = [
-    'alpha_pose/yolo/cfg/tiny-yolo-voc.cfg',
-    'alpha_pose/yolo/cfg/yolo-voc.cfg',
-    'alpha_pose/yolo/cfg/yolo.cfg',
-    'alpha_pose/yolo/cfg/yolov3-spp.cfg',
-    'alpha_pose/yolo/cfg/yolov3.cfg',
+    'yolo/cfg/tiny-yolo-voc.cfg',
+    'yolo/cfg/yolo-voc.cfg',
+    'yolo/cfg/yolo.cfg',
+    'yolo/cfg/yolov3-spp.cfg',
+    'yolo/cfg/yolov3.cfg',
 ]
 
 
